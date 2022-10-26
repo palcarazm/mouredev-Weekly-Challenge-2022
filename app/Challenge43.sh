@@ -75,11 +75,27 @@ export ch_nombre
 export ch_edad
 export ch_altura
 
+# ======
+# Eliminar las globales
+# ======
+function deallocate() {
+    unset ch_tipo
+    unset ch_fichero
+    unset ch_csv
+    unset ch_loc_col_nombre
+    unset ch_loc_col_edad
+    unset ch_loc_col_altura
+    unset ch_persona
+    unset ch_nombre
+    unset ch_edad
+    unset ch_altura
+}
+
 # =======
 # verificar fichero
 # =======
 function verificarFichero() {
-    [ ! -f "$ch_fichero" ] && echo -e "\e[1;41m ERROR \e[0m No se ha encontrado el fichero $ch_fichero" >&2 && exit 1
+    [ ! -f "$ch_fichero" ] && echo -e "\e[1;41m ERROR \e[0m No se ha encontrado el fichero $ch_fichero" >&2 && deallocate && exit 1
 }
 # =======
 # Parsear fichero
@@ -118,7 +134,7 @@ function imprimir() {
         resultado="$resultado$(echo "$posibles" | grep -o "." | shuf -n1) "
         pendiente=$((pendiente - 1))
     done
-    echo "$resultado" && exit 0
+    echo "$resultado" && deallocate && exit 0
 }
 
 # =======
@@ -168,7 +184,7 @@ function trato() {
 # MAIN
 # =======
 # Parsear opciones
-[ $# -eq 0 ] && usage && exit 1
+[ $# -eq 0 ] && usage && deallocate && exit 1
 
 while getopts "ht:f:" opcion; do
     case "$opcion" in
@@ -180,14 +196,14 @@ while getopts "ht:f:" opcion; do
         ;;
     \?) # Opción invalida
         echo -e "\e[1;41m ERROR \e[0m Opción invalidad: -$OPTARG" >&2
-        usage && exit 1
+        usage && deallocate && exit 1
         ;;
     :) # Falta argumento
         echo -e "\e[1;41m ERROR \e[0m -$OPTARG requiere de un argumento" >&2
-        usage && exit 1
+        usage && deallocate && exit 1
         ;;
     h | *)
-        usage && exit 0
+        usage && deallocate && exit 0
         ;;
     esac
 done
@@ -207,28 +223,14 @@ PLANTILLA)
         echo Lucia,9,100
     } >>./platilla.csv
     echo -e "\e[1;42m EXITO \e[0m plantilla crea." >&2
-    exit 0
+    deallocate && exit 0
     ;;
 DEFAULT)
     echo -e "\e[1;41m ERROR \e[0m El tipo de interacción no se ha indicado" >&2
-    usage && exit 1
+    usage && deallocate && exit 1
     ;;
 *)
     echo -e "\e[1;41m ERROR \e[0m Tipo de interacción invalida: -$ch_tipo" >&2
-    usage && exit 1
+    usage && deallocate && exit 1
     ;;
 esac
-
-# ======
-# Eliminar las globales
-# ======
-unset ch_tipo
-unset ch_fichero
-unset ch_csv
-unset ch_loc_col_nombre
-unset ch_loc_col_edad
-unset ch_loc_col_altura
-unset ch_persona
-unset ch_nombre
-unset ch_edad
-unset ch_altura
